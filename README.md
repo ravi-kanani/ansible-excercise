@@ -1,0 +1,2 @@
+# ansible-excercise
+Ansible excercises
