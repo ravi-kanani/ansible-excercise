@@ -1,0 +1,45 @@
+-
+  name: "Install Docker on all hosts"
+  hosts: all
+  become: true
+  become_user: root
+  tasks:
+    - name: "Install Dependencies"
+      become: true
+      become_user: root
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg
+        - software-properties-common
+
+    - name: "Add GPG key"
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: "Add apt repository"
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: "Install docker, docker-cli and conteiner.io"
+      apt:
+        name: "{{item}}"
+        state: latest
+        update_cache: yes
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+
+    - name: "Make sure that docker is started and enabled"
+      service:
+        name: docker
+        state: started
+        enabled: yes
